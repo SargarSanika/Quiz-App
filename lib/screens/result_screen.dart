@@ -4,17 +4,49 @@ import 'package:quiz_app/providers/summery_provider.dart';
 import 'package:quiz_app/data/questions_list.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ResultScreen extends ConsumerWidget {
+// 🔥 NEW IMPORTS
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class ResultScreen extends ConsumerStatefulWidget {
   const ResultScreen(this.restart, {super.key});
   final void Function() restart;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ResultScreen> createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends ConsumerState<ResultScreen> {
+  bool saved = false;
+
+  // 🔥 SAVE SCORE FUNCTION
+  void saveScore(int score) async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return;
+
+    await FirebaseFirestore.instance.collection('scores').add({
+      'uid': user.uid,
+      'email': user.email,
+      'score': score,
+      'timestamp': Timestamp.now(),
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final summeryData = ref.watch(summaryProvider);
     final totalquestion = questionslist.length;
+
     final correctquestions = summeryData
         .where((data) => data['Correct_Answers'] == data['selected_ANswer'])
         .length;
+
+    // 🔥 SAVE ONLY ONCE
+    if (!saved) {
+      saveScore(correctquestions);
+      saved = true;
+    }
 
     return Scaffold(
       body: Container(
@@ -70,7 +102,7 @@ class ResultScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
-                        onPressed: restart,
+                        onPressed: widget.restart,
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.blue.shade800,
                           backgroundColor: Colors.white,
@@ -105,7 +137,8 @@ class ResultScreen extends ConsumerWidget {
               ),
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) => ShowSummeryItem(summeryData[index]),
+                  (context, index) =>
+                      ShowSummeryItem(summeryData[index]),
                   childCount: summeryData.length,
                 ),
               ),
@@ -164,7 +197,8 @@ class ShowSummeryItem extends StatelessWidget {
             _buildAnswerRow('Correct Answer:',
                 data['Correct_Answers'] as String, Colors.green),
             const SizedBox(height: 8),
-            _buildAnswerRow('Your Answer:', data['selected_ANswer'] as String,
+            _buildAnswerRow('Your Answer:',
+                data['selected_ANswer'] as String,
                 isCorrect ? Colors.green : Colors.red),
           ],
         ),

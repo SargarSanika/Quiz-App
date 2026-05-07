@@ -28,15 +28,18 @@ class _StartScreenState extends State<StartScreen> {
           SafeArea(
             child: Column(
               children: [
+                // 🔴 FIXED LOGOUT
                 Align(
                   alignment: Alignment.topRight,
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.of(context).push(
+                        Navigator.pushAndRemoveUntil(
+                          context,
                           MaterialPageRoute(
                               builder: (context) => const LoginScreen()),
+                          (route) => false,
                         );
                       },
                       icon: const Icon(Icons.logout, color: Colors.blue),
@@ -61,6 +64,7 @@ class _StartScreenState extends State<StartScreen> {
                     ),
                   ),
                 ),
+
                 Expanded(
                   child: Center(
                     child: Column(
@@ -91,32 +95,31 @@ class _StartScreenState extends State<StartScreen> {
                             ),
                           ),
                         ),
+
                         const SizedBox(height: 40),
+
                         Text(
                           "Learn with Flutter",
                           style: GoogleFonts.poppins(
                             fontSize: 36,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withOpacity(0.1),
-                                offset: const Offset(2, 2),
-                                blurRadius: 4,
-                              ),
-                            ],
                           ),
                         ),
+
                         const SizedBox(height: 20),
+
                         Text(
                           "Test your knowledge and improve your skills!",
                           textAlign: TextAlign.center,
                           style: GoogleFonts.poppins(
                             fontSize: 18,
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white70,
                           ),
                         ),
+
                         const SizedBox(height: 60),
+
                         ElevatedButton(
                           onPressed: widget.switchScreen,
                           style: ElevatedButton.styleFrom(
@@ -127,7 +130,6 @@ class _StartScreenState extends State<StartScreen> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
-                            elevation: 5,
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -140,7 +142,7 @@ class _StartScreenState extends State<StartScreen> {
                                 ),
                               ),
                               const SizedBox(width: 10),
-                              const Icon(Icons.arrow_forward_rounded, size: 24),
+                              const Icon(Icons.arrow_forward_rounded),
                             ],
                           ),
                         ),

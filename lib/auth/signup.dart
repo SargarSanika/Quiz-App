@@ -16,28 +16,48 @@ class _SignupScreenState extends State<SignupScreen> {
   String _password = '';
 
   void signUp() async {
-    if (_formkey.currentState!.validate()) {
-      _formkey.currentState!.save();
-      try {
-        UserCredential userCredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(email: _email, password: _password);
-        User? user = userCredential.user;
-        if (user != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-          );
-        }
-      } on FirebaseAuthException catch (e) {
+  if (_formkey.currentState!.validate()) {
+    _formkey.currentState!.save();
+
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: _email.trim(),
+        password: _password.trim(),
+      );
+
+      User? user = userCredential.user;
+
+      if (user != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to sign up: ${e.message}'),
-            backgroundColor: Colors.red,
-          ),
+          const SnackBar(content: Text("Signup Successful")),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       }
+    } on FirebaseAuthException catch (e) {
+      String message = "Something went wrong";
+
+      if (e.code == 'email-already-in-use') {
+        message = "Email already in use";
+      } else if (e.code == 'weak-password') {
+        message = "Password is too weak";
+      } else if (e.code == 'invalid-email') {
+        message = "Invalid email";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {

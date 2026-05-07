@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:quiz_app/providers/selectedanswers_provider.dart';
@@ -7,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 class QuestionScreen extends ConsumerStatefulWidget {
   const QuestionScreen(this.showResult, {super.key});
   final void Function() showResult;
+
   @override
   ConsumerState<QuestionScreen> createState() => _QuestionState();
 }
@@ -14,20 +17,73 @@ class QuestionScreen extends ConsumerStatefulWidget {
 class _QuestionState extends ConsumerState<QuestionScreen> {
   var currentquestionindex = 0;
 
+  // ✅ TIMER
+  int timeLeft = 15;
+  Timer? timer;
+
+  // ✅ FIX: store shuffled answers once
+  late List<String> shuffledAnswers;
+
+  @override
+  void initState() {
+    super.initState();
+    shuffledAnswers =
+        questionslist[currentquestionindex].shuffleAnswers(); // only once
+    startTimer();
+  }
+
+  void startTimer() {
+    timeLeft = 15;
+
+    timer?.cancel();
+    timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (timeLeft == 0) {
+        t.cancel();
+        changeIndex(""); // auto move
+      } else {
+        setState(() {
+          timeLeft--;
+        });
+      }
+    });
+  }
+
   void changeIndex(String answers) {
-    ref.read(selectedAnswersProvider.notifier).choosedAnswers(answers);
+    timer?.cancel();
+
+    if (answers.isNotEmpty) {
+      ref.read(selectedAnswersProvider.notifier).choosedAnswers(answers);
+    } else {
+      ref
+          .read(selectedAnswersProvider.notifier)
+          .choosedAnswers("Not Answered");
+    }
+
     if (currentquestionindex < questionslist.length - 1) {
       setState(() {
         currentquestionindex++;
+
+        // ✅ shuffle only once for next question
+        shuffledAnswers =
+            questionslist[currentquestionindex].shuffleAnswers();
       });
+
+      startTimer();
     } else {
       widget.showResult();
     }
   }
 
   @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final currentquestion = questionslist[currentquestionindex];
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -45,19 +101,35 @@ class _QuestionState extends ConsumerState<QuestionScreen> {
               LinearProgressIndicator(
                 value: (currentquestionindex + 1) / questionslist.length,
                 backgroundColor: Colors.white.withOpacity(0.2),
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
               ),
-              SizedBox(height: 40),
+
+              const SizedBox(height: 20),
+
+              // ✅ TIMER UI
+              Text(
+                'Time Left: $timeLeft s',
+                style: GoogleFonts.poppins(
+                  color: timeLeft <= 5 ? Colors.red : Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 20),
+
               Text(
                 'Question ${currentquestionindex + 1}/${questionslist.length}',
                 style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 18,
-                  fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 20),
+
+              const SizedBox(height: 20),
+
               Card(
                 elevation: 8,
                 shape: RoundedRectangleBorder(
@@ -77,11 +149,12 @@ class _QuestionState extends ConsumerState<QuestionScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 30),
+
+              const SizedBox(height: 30),
+
               Expanded(
                 child: ListView(
-                  children: currentquestion
-                      .shuffleAnswers()
+                  children: shuffledAnswers
                       .map(
                         (answer) => AnswerButton(
                           answer,
@@ -117,14 +190,12 @@ class AnswerButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
-          elevation: 4,
         ),
         onPressed: onTap,
         child: Text(
           answertext,
           style: GoogleFonts.poppins(
             fontSize: 18,
-            fontWeight: FontWeight.w500,
           ),
         ),
       ),

@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -50,19 +41,47 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAKWUNBGzdfjdtbPKrUOYRkI781CeQ-7nc',
-    appId: '1:411703663239:android:b3033ad696a9abdb5ff622',
-    messagingSenderId: '411703663239',
-    projectId: 'quizapp-d8955',
-    storageBucket: 'quizapp-d8955.appspot.com',
+    apiKey: 'AIzaSyCI1ZBm4utYhOVjRjL1BSnoD1s_wUuEWrU',
+    appId: '1:204394608709:android:d084d949d45b0054144b2c',
+    messagingSenderId: '204394608709',
+    projectId: 'quiz-app-sanika',
+    storageBucket: 'quiz-app-sanika.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDHTYKlid2reNG2dRuFpmNxIeHIqFtzCd8',
-    appId: '1:411703663239:ios:f459a5570309eedf5ff622',
-    messagingSenderId: '411703663239',
-    projectId: 'quizapp-d8955',
-    storageBucket: 'quizapp-d8955.appspot.com',
+    apiKey: 'AIzaSyAjbjxncYEW0pMkPN7BTqExbbH6RxIu8rY',
+    appId: '1:204394608709:ios:52d3a7fa2b69bd75144b2c',
+    messagingSenderId: '204394608709',
+    projectId: 'quiz-app-sanika',
+    storageBucket: 'quiz-app-sanika.firebasestorage.app',
     iosBundleId: 'com.example.quizApp',
   );
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyD0G7odxczpP7idkJAdrh6AfwmqYwDqk30',
+    appId: '1:204394608709:web:f347ee02c7fd4d3d144b2c',
+    messagingSenderId: '204394608709',
+    projectId: 'quiz-app-sanika',
+    authDomain: 'quiz-app-sanika.firebaseapp.com',
+    storageBucket: 'quiz-app-sanika.firebasestorage.app',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAjbjxncYEW0pMkPN7BTqExbbH6RxIu8rY',
+    appId: '1:204394608709:ios:52d3a7fa2b69bd75144b2c',
+    messagingSenderId: '204394608709',
+    projectId: 'quiz-app-sanika',
+    storageBucket: 'quiz-app-sanika.firebasestorage.app',
+    iosBundleId: 'com.example.quizApp',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyD0G7odxczpP7idkJAdrh6AfwmqYwDqk30',
+    appId: '1:204394608709:web:6be7101a973a1eb0144b2c',
+    messagingSenderId: '204394608709',
+    projectId: 'quiz-app-sanika',
+    authDomain: 'quiz-app-sanika.firebaseapp.com',
+    storageBucket: 'quiz-app-sanika.firebasestorage.app',
+  );
+
 }
