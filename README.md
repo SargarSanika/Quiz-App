@@ -14,9 +14,6 @@ A cross-platform Quiz Application built using Flutter and Firebase.
 - Dart
 - Firebase (Auth, Firestore)
 
-## 📸 Screenshots
-(Add app screenshots here)
-
 ## ⚙️ How to Run
 flutter pub get  
 flutter run  
