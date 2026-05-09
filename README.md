@@ -131,6 +131,10 @@ You can download APK from release section.
 
 ## 👨‍💻 Developer
 Sanika Sargar
+
 Shubhi Dwivedi
+
 Shravya
+
 Vinaya Patil
+
